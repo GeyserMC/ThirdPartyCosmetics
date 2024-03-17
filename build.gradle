@@ -1,0 +1,41 @@
+plugins {
+    id 'java-library'
+    id 'java'
+}
+
+group 'org.geysermc.extension.ears'
+version '1.0.0'
+
+repositories {
+//    mavenLocal()
+    mavenCentral()
+    maven {
+        url 'https://repo.opencollab.dev/main'
+    }
+}
+
+dependencies {
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.10.0'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.10.0'
+
+    compileOnly 'org.geysermc.geyser:api:2.2.2-SNAPSHOT'
+}
+
+jar {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+
+    archiveFileName = "${project.name}.jar"
+
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+}
+
+test {
+    useJUnitPlatform()
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}

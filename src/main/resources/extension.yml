@@ -1,0 +1,6 @@
+id: earsextension
+name: EarsExtension
+main: org.geysermc.extension.ears.EarsExtension
+api: 1.0.0
+version: 1.0.0
+authors: [rtm516]
