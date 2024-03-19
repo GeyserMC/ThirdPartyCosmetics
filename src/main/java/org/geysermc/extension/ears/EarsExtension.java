@@ -26,13 +26,13 @@
 package org.geysermc.extension.ears;
 
 import org.geysermc.event.subscribe.Subscribe;
-import org.geysermc.geyser.api.event.lifecycle.SkinApplyEvent;
+import org.geysermc.geyser.api.event.bedrock.SessionSkinApplyEvent;
 import org.geysermc.geyser.api.extension.Extension;
 import org.geysermc.geyser.api.skin.Skin;
 
 public class EarsExtension implements Extension {
     @Subscribe
-    public void onSkinApplyEvent(SkinApplyEvent event) {
+    public void onSkinApplyEvent(SessionSkinApplyEvent event) {
         // Not a bedrock player check for ears
         if (!event.isBedrock()) {
             // Get the ears texture for the player
