@@ -1,6 +1,6 @@
-id: earsextension
-name: EarsExtension
-main: org.geysermc.extension.ears.EarsExtension
+id: thirdpartycosmetics
+name: ThirdPartyCosmetics
+main: org.geysermc.extension.thirdpartycosmetics.ThirdPartyCosmetics
 api: 1.0.0
 version: 1.0.0
 authors: [rtm516]

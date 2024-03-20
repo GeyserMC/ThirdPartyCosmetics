@@ -20,10 +20,10 @@
  * THE SOFTWARE.
  *
  * @author GeyserMC
- * @link https://github.com/GeyserMC/GeyserConnect
+ * @link https://github.com/GeyserMC/ThirdPartyCosmetics
  */
 
-package org.geysermc.extension.ears;
+package org.geysermc.extension.thirdpartycosmetics.ears;
 
 import java.util.UUID;
 

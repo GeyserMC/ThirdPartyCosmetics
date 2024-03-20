@@ -20,10 +20,10 @@
  * THE SOFTWARE.
  *
  * @author GeyserMC
- * @link https://github.com/GeyserMC/GeyserConnect
+ * @link https://github.com/GeyserMC/ThirdPartyCosmetics
  */
 
-package org.geysermc.extension.ears;
+package org.geysermc.extension.thirdpartycosmetics;
 
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
@@ -41,7 +41,7 @@ import java.util.concurrent.TimeUnit;
 public class Utils {
     public static byte[] readAllBytes(String name) {
         byte[] bytes = new byte[0];
-        try (FileSystem fileSystem = FileSystems.newFileSystem(new File(EarsExtension.class.getProtectionDomain().getCodeSource().getLocation().toURI()).toPath(), Collections.emptyMap())) {
+        try (FileSystem fileSystem = FileSystems.newFileSystem(new File(ThirdPartyCosmetics.class.getProtectionDomain().getCodeSource().getLocation().toURI()).toPath(), Collections.emptyMap())) {
             try (InputStream input = Files.newInputStream(fileSystem.getPath(name))) {
                 bytes = new byte[input.available()];
 

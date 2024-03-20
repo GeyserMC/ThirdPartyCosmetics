@@ -3,7 +3,7 @@ plugins {
     id 'java'
 }
 
-group 'org.geysermc.extension.ears'
+group 'org.geysermc.extension.thirdpartycosmetics'
 version '1.0.0'
 
 repositories {

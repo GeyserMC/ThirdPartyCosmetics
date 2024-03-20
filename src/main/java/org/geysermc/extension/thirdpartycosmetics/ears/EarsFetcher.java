@@ -20,11 +20,12 @@
  * THE SOFTWARE.
  *
  * @author GeyserMC
- * @link https://github.com/GeyserMC/GeyserConnect
+ * @link https://github.com/GeyserMC/ThirdPartyCosmetics
  */
 
-package org.geysermc.extension.ears;
+package org.geysermc.extension.thirdpartycosmetics.ears;
 
+import org.geysermc.extension.thirdpartycosmetics.Utils;
 import org.geysermc.geyser.api.skin.Skin;
 import org.geysermc.geyser.api.skin.SkinGeometry;
 
