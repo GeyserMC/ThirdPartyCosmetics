@@ -59,12 +59,12 @@ public class EarsFetcher {
      */
     public static CompletableFuture<Skin> request(Skin officialSkin, UUID playerId, String username) {
         for (EarsProvider provider : EarsProvider.VALUES) {
-            Skin skin1 = Utils.getOrDefault(
+            Skin skin = Utils.getOrDefault(
                 requestEars(provider.getUrlFor(playerId, username), officialSkin),
-                officialSkin, 4
+                officialSkin, 3
             );
-            if (skin1 != officialSkin) {
-                return CompletableFuture.completedFuture(skin1);
+            if (skin != officialSkin) {
+                return CompletableFuture.completedFuture(skin);
             }
         }
 

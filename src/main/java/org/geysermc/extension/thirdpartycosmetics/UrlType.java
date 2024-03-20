@@ -23,37 +23,10 @@
  * @link https://github.com/GeyserMC/ThirdPartyCosmetics
  */
 
-package org.geysermc.extension.thirdpartycosmetics.ears;
+package org.geysermc.extension.thirdpartycosmetics;
 
-import org.geysermc.extension.thirdpartycosmetics.UrlType;
-
-import java.util.UUID;
-
-public enum EarsProvider {
-    MINECRAFTCAPES("https://api.minecraftcapes.net/profile/%s/ears", UrlType.UUID);
-
-    public static final EarsProvider[] VALUES = values();
-    private String url;
-    private UrlType type;
-
-    EarsProvider(String url, UrlType urlType) {
-        this.url = url;
-        this.type = urlType;
-    }
-
-    public String getUrlFor(String type) {
-        return String.format(url, type);
-    }
-
-    public String getUrlFor(UUID uuid, String username) {
-        return getUrlFor(toRequestedType(type, uuid, username));
-    }
-
-    public static String toRequestedType(UrlType type, UUID uuid, String username) {
-        return switch (type) {
-            case UUID -> uuid.toString().replace("-", "");
-            case UUID_DASHED -> uuid.toString();
-            default -> username;
-        };
-    }
+public enum UrlType {
+    USERNAME,
+    UUID,
+    UUID_DASHED
 }

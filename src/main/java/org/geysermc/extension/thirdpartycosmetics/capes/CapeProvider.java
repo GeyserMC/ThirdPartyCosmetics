@@ -23,20 +23,23 @@
  * @link https://github.com/GeyserMC/ThirdPartyCosmetics
  */
 
-package org.geysermc.extension.thirdpartycosmetics.ears;
+package org.geysermc.extension.thirdpartycosmetics.capes;
 
 import org.geysermc.extension.thirdpartycosmetics.UrlType;
 
+import java.util.Arrays;
 import java.util.UUID;
 
-public enum EarsProvider {
-    MINECRAFTCAPES("https://api.minecraftcapes.net/profile/%s/ears", UrlType.UUID);
+public enum CapeProvider {
+    OPTIFINE("https://optifine.net/capes/%s.png", UrlType.USERNAME),
+    LABYMOD("https://dl.labymod.net/capes/%s", UrlType.UUID_DASHED),
+    MINECRAFTCAPES("https://api.minecraftcapes.net/profile/%s/cape", UrlType.UUID);
 
-    public static final EarsProvider[] VALUES = values();
+    public static final CapeProvider[] VALUES = Arrays.copyOfRange(values(), 1, 5);
     private String url;
     private UrlType type;
 
-    EarsProvider(String url, UrlType urlType) {
+    CapeProvider(String url, UrlType urlType) {
         this.url = url;
         this.type = urlType;
     }

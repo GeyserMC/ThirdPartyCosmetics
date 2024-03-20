@@ -26,9 +26,13 @@
 package org.geysermc.extension.thirdpartycosmetics;
 
 import org.geysermc.event.subscribe.Subscribe;
+import org.geysermc.extension.thirdpartycosmetics.capes.CapeFetcher;
+import org.geysermc.extension.thirdpartycosmetics.capes.CapeProvider;
 import org.geysermc.extension.thirdpartycosmetics.ears.EarsFetcher;
+import org.geysermc.extension.thirdpartycosmetics.ears.EarsProvider;
 import org.geysermc.geyser.api.event.bedrock.SessionSkinApplyEvent;
 import org.geysermc.geyser.api.extension.Extension;
+import org.geysermc.geyser.api.skin.Cape;
 import org.geysermc.geyser.api.skin.Skin;
 
 public class ThirdPartyCosmetics implements Extension {
@@ -36,7 +40,19 @@ public class ThirdPartyCosmetics implements Extension {
     public void onSkinApplyEvent(SessionSkinApplyEvent event) {
         // Not a bedrock player apply cosmetics
         if (!event.isBedrock()) {
+            handleCapes(event);
             handleEars(event);
+        }
+    }
+
+    private void handleCapes(SessionSkinApplyEvent event) {
+        Cape cape = Utils.getOrDefault(CapeFetcher.request(
+            event.skinData().cape(), event.uuid(), event.username()
+        ), event.skinData().cape(), CapeProvider.VALUES.length * 3);
+
+        if (!cape.failed() && cape != event.skinData().cape()) {
+            this.logger().debug("Applied cape texture for " + event.username() + " (" + event.uuid() + ")");
+            event.cape(cape);
         }
     }
 
@@ -50,7 +66,7 @@ public class ThirdPartyCosmetics implements Extension {
         // Get the ears texture for the player
         Skin skin = Utils.getOrDefault(EarsFetcher.request(
             event.skinData().skin(), event.uuid(), event.username()
-        ), event.skinData().skin(), 3);
+        ), event.skinData().skin(), EarsProvider.VALUES.length * 3);
 
         // Does the skin have an ears texture
         if (skin != event.skinData().skin()) {
