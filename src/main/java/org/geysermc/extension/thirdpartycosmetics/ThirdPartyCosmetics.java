@@ -39,7 +39,7 @@ public class ThirdPartyCosmetics implements Extension {
     @Subscribe
     public void onSkinApplyEvent(SessionSkinApplyEvent event) {
         // Not a bedrock player apply cosmetics
-        if (!event.isBedrock()) {
+        if (!event.bedrock()) {
             handleCapes(event);
             handleEars(event);
         }
