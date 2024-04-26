@@ -1,0 +1,80 @@
+name: Build
+
+on:
+  workflow_dispatch:
+  push:
+    paths-ignore:
+      - '.idea/copyright/*.xml' 
+      - '.gitignore'
+      - 'LICENSE'
+      - 'README.md'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+        PROJECT: 'thirdpartycosmetics'
+
+    steps:
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: 17
+          distribution: temurin
+
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Build ThirdPartyCosmetics
+        uses: gradle/gradle-build-action@v2
+        with:
+          arguments: build
+
+      - name: Archive artifacts
+        uses: actions/upload-artifact@v3
+        if: success()
+        with:
+          name: ThirdPartyCosmetics
+          path: build/libs/GeyserConnect.jar
+          
+      - name: Get Release Metadata
+        if: ${{ success() && github.repository == 'GeyserMC/ThirdPartyCosmetics' && github.ref_name == 'master' }}
+        uses: Kas-tle/base-release-action@b863fa0f89bd15267a96a72efb84aec25f168d4c # https://github.com/Kas-tle/base-release-action/releases/tag/main-11
+        with:
+          appID: ${{ secrets.RELEASE_APP_ID }}
+          appPrivateKey: ${{ secrets.RELEASE_APP_PK }}
+          files: |
+            thirdpartycosmetics:build/libs/ThirdPartyCosmetics.jar
+          releaseEnabled: false
+          saveMetadata: true
+
+      - name: Update Generated Metadata
+        if: ${{ success() && github.repository == 'GeyserMC/ThirdPartyCosmetics' && github.ref_name == 'master' }}
+        run: |
+          cat metadata.json
+          echo
+          version=$(cat build.gradle | grep -o "version '[0-9\\.]*'" | cut -d" " -f2 | sed "s/'//g")
+          cat metadata.json | jq --arg project "${PROJECT}" --arg version "${version}" '
+            .
+            | .changes |= map({"commit", "summary", "message"}) 
+            | .downloads |= map_values({"name", "sha256"})
+            | {$project, "repo", $version, "number": .build, "changes", "downloads"}
+          ' | tee metadata.json
+
+      - name: Publish to Downloads API
+        if: ${{ success() && github.repository == 'GeyserMC/ThirdPartyCosmetics' && github.ref_name == 'master' }}
+        shell: bash
+        env:
+          DOWNLOADS_USERNAME: ${{ vars.DOWNLOADS_USERNAME }}
+          DOWNLOADS_PRIVATE_KEY: ${{ secrets.DOWNLOADS_PRIVATE_KEY }}
+          DOWNLOADS_SERVER_IP: ${{ secrets.DOWNLOADS_SERVER_IP }}
+        run: |
+          # Save the private key to a file
+          echo "$DOWNLOADS_PRIVATE_KEY" > id_ecdsa
+          chmod 600 id_ecdsa
+          # Create the build folder
+          ssh -o StrictHostKeyChecking=no -i id_ecdsa $DOWNLOADS_USERNAME@$DOWNLOADS_SERVER_IP mkdir -p "~/uploads/$PROJECT/$GITHUB_RUN_NUMBER/"
+          # Copy over artifacts
+          rsync -P -e "ssh -o StrictHostKeyChecking=no -i id_ecdsa" build/libs/ThirdPartyCosmetics.jar $DOWNLOADS_USERNAME@$DOWNLOADS_SERVER_IP:~/uploads/$PROJECT/$GITHUB_RUN_NUMBER/
+          # Run the build script
+          rsync -P -e "ssh -o StrictHostKeyChecking=no -i id_ecdsa" metadata.json $DOWNLOADS_USERNAME@$DOWNLOADS_SERVER_IP:~/uploads/$PROJECT/$GITHUB_RUN_NUMBER/
