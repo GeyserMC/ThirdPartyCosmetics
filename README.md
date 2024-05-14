@@ -11,4 +11,6 @@ ThirdPartyCosmetics is an extension that adds support for loading ears and other
 ### Currently supported providers:
 | Name | Cosmetics |
 | --- | --- |
-| [MinecraftCapes](https://minecraftcapes.net/) | Ears |
+| [MinecraftCapes](https://minecraftcapes.net/) | Ears, Capes |
+| [OptiFine](https://optifine.net/) | Capes |
+| [LabyMod](https://www.labymod.net/) | Capes |
