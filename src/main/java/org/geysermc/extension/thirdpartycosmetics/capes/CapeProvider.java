@@ -35,7 +35,7 @@ public enum CapeProvider {
     LABYMOD("https://dl.labymod.net/capes/%s", UrlType.UUID_DASHED),
     MINECRAFTCAPES("https://api.minecraftcapes.net/profile/%s/cape", UrlType.UUID);
 
-    public static final CapeProvider[] VALUES = Arrays.copyOfRange(values(), 1, 5);
+    public static final CapeProvider[] VALUES = values();
     private String url;
     private UrlType type;
 
