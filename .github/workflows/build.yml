@@ -44,7 +44,7 @@ jobs:
         if: success()
         with:
           name: ThirdPartyCosmetics
-          path: build/libs/GeyserConnect.jar
+          path: build/libs/ThirdPartyCosmetics.jar
           if-no-files-found: error
 
       - name: Get Version
