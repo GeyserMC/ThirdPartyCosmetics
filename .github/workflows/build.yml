@@ -64,6 +64,6 @@ jobs:
         if: ${{ (success() || failure()) && github.repository == 'GeyserMC/ThirdPartyCosmetics' }}
         uses: GeyserMC/actions/notify-discord@master
         with:
-          discordWebhook: ${{ secrets.TEST_DISCORD_WEBHOOK }}
+          discordWebhook: ${{ secrets.DISCORD_WEBHOOK }}
           status: ${{ job.status }}
           body: ${{ steps.metadata.outputs.body }}
