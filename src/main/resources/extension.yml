@@ -1,6 +1,6 @@
 id: thirdpartycosmetics
 name: ThirdPartyCosmetics
 main: org.geysermc.extension.thirdpartycosmetics.ThirdPartyCosmetics
-api: 1.0.0
+api: 2.4.1
 version: 1.0.0
 authors: [rtm516]
