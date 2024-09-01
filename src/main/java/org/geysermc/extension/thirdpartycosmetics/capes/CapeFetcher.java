@@ -29,6 +29,7 @@ import org.geysermc.extension.thirdpartycosmetics.Utils;
 import org.geysermc.geyser.api.skin.Cape;
 
 import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 import java.net.URL;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -68,7 +69,14 @@ public class CapeFetcher {
     private static Cape supplyCape(String capeUrl) {
         byte[] cape = new byte[0];
         try {
-            cape = Utils.bufferedImageToImageData(ImageIO.read(new URL(capeUrl)));
+            BufferedImage originalImage = ImageIO.read(new URL(capeUrl));
+            if(originalImage.getWidth() != 64 || originalImage.getHeight() != 32){
+                BufferedImage resizedImage = Utils.resizeCape(originalImage);
+                cape = Utils.bufferedImageToImageData(resizedImage);
+            }
+            else{
+                cape = Utils.bufferedImageToImageData(originalImage);
+            }
         } catch (Exception ignored) {
         } // just ignore I guess
 
