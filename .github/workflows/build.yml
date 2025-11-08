@@ -60,6 +60,14 @@ jobs:
             build/libs/ThirdPartyCosmetics.jar
           changelog: ${{ steps.metadata.outputs.body }}
 
+      - name: Publish to Modrinth
+        if: ${{ success() && github.repository == 'GeyserMC/ThirdPartyCosmetics' && github.ref_name == 'master' }}
+        env:
+          CHANGELOG: ${{ steps.metadata.outputs.body }}
+          BUILD_NUMBER: ${{ steps.metadata.outputs.tagBase }}
+          MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}
+        run: ./gradlew modrinth
+
       - name: Notify Discord
         if: ${{ (success() || failure()) && github.repository == 'GeyserMC/ThirdPartyCosmetics' }}
         uses: GeyserMC/actions/notify-discord@master
