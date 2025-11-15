@@ -22,7 +22,6 @@
  * @author GeyserMC
  * @link https://github.com/GeyserMC/ThirdPartyCosmetics
  */
-
 package org.geysermc.extension.thirdpartycosmetics.capes;
 
 import org.geysermc.extension.thirdpartycosmetics.Utils;
@@ -44,6 +43,14 @@ public class CapeFetcher {
      * @return The updated cape
      */
     public static CompletableFuture<Cape> request(Cape currentCape, UUID playerId, String username) {
+        // Skip if player already has official Mojang cape - let Geyser core handle it
+        if (currentCape != null && !currentCape.failed()) {
+            String capeUrl = currentCape.textureUrl();
+            if (capeUrl != null && (capeUrl.contains("textures.minecraft.net") || capeUrl.contains("cape.minecraft.net"))) {
+                return CompletableFuture.completedFuture(currentCape);
+            }
+        }
+        
         for (CapeProvider provider : CapeProvider.VALUES) {
             Cape cape = Utils.getOrDefault(
                 requestCape(provider.getUrlFor(playerId, username), currentCape),
