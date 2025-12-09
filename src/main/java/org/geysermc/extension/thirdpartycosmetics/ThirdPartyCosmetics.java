@@ -27,28 +27,43 @@ package org.geysermc.extension.thirdpartycosmetics;
 
 import org.geysermc.event.subscribe.Subscribe;
 import org.geysermc.extension.thirdpartycosmetics.capes.CapeFetcher;
-import org.geysermc.extension.thirdpartycosmetics.capes.CapeProvider;
+import org.geysermc.extension.thirdpartycosmetics.config.ConfigLoader;
+import org.geysermc.extension.thirdpartycosmetics.config.CosmeticConfig;
 import org.geysermc.extension.thirdpartycosmetics.ears.EarsFetcher;
-import org.geysermc.extension.thirdpartycosmetics.ears.EarsProvider;
 import org.geysermc.geyser.api.event.bedrock.SessionSkinApplyEvent;
+import org.geysermc.geyser.api.event.lifecycle.GeyserPostInitializeEvent;
 import org.geysermc.geyser.api.extension.Extension;
 import org.geysermc.geyser.api.skin.Cape;
 import org.geysermc.geyser.api.skin.Skin;
 
 public class ThirdPartyCosmetics implements Extension {
+
+    public static CosmeticConfig config;
+
+    @Subscribe
+    public void onGeyserInitialise(GeyserPostInitializeEvent event) {
+        config = ConfigLoader.loadConfig(this.dataFolder());
+    }
+
     @Subscribe
     public void onSkinApplyEvent(SessionSkinApplyEvent event) {
-        // Not a bedrock player apply cosmetics
-        if (!event.bedrock()) {
-            handleCapes(event);
-            handleEars(event);
+        // event.bedrock() wont run for linked players
+        // This ensures the player is an online player
+        if (event.uuid().version() == 4) {
+            if(config.customCapes) {
+                handleCapes(event);
+            }
+
+            if(config.customEars) {
+                handleEars(event);
+            }
         }
     }
 
     private void handleCapes(SessionSkinApplyEvent event) {
         Cape cape = Utils.getOrDefault(CapeFetcher.request(
             event.skinData().cape(), event.uuid(), event.username()
-        ), event.skinData().cape(), CapeProvider.VALUES.length * 3);
+        ), event.skinData().cape(), ThirdPartyCosmetics.config.cape_urls.size() * 3);
 
         if (!cape.failed() && cape != event.skinData().cape()) {
             this.logger().debug("Applied cape texture for " + event.username() + " (" + event.uuid() + ")");
@@ -66,7 +81,7 @@ public class ThirdPartyCosmetics implements Extension {
         // Get the ears texture for the player
         Skin skin = Utils.getOrDefault(EarsFetcher.request(
             event.skinData().skin(), event.uuid(), event.username()
-        ), event.skinData().skin(), EarsProvider.VALUES.length * 3);
+        ), event.skinData().skin(), ThirdPartyCosmetics.config.ears_urls.size() * 3);
 
         // Does the skin have an ears texture
         if (skin != event.skinData().skin()) {

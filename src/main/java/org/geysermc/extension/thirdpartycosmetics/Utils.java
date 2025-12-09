@@ -25,19 +25,23 @@
 
 package org.geysermc.extension.thirdpartycosmetics;
 
+import org.geysermc.geyser.api.GeyserApi;
+
+import javax.imageio.ImageIO;
+import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.RenderingHints;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.HttpURLConnection;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.util.Collections;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -76,28 +80,21 @@ public class Utils {
     /**
      * Resize a BufferedImage that is expected to be a cape
      *
-     * @param image The BufferedImage to resize
+     * @param original The BufferedImage to resize
      * @return The converted BufferedImage
      */
-    public static BufferedImage resizeCape(BufferedImage image) throws IOException {
-        if (image.getWidth() > 64 || image.getHeight() > 32) {
-            // Prevent weirdly-scaled capes from being cut off
-            BufferedImage newImage = new BufferedImage(128, 64, BufferedImage.TYPE_INT_ARGB);
-            Graphics g = newImage.createGraphics();
-            g.drawImage(image, 0, 0, image.getWidth(), image.getHeight(), null);
-            g.dispose();
-            image.flush();
-            image = scale(newImage, 64, 32);
-        } else if (image.getWidth() < 64 || image.getHeight() < 32) {
-            // Bedrock doesn't like smaller-sized capes, either.
-            BufferedImage newImage = new BufferedImage(64, 32, BufferedImage.TYPE_INT_ARGB);
-            Graphics g = newImage.createGraphics();
-            g.drawImage(image, 0, 0, image.getWidth(), image.getHeight(), null);
-            g.dispose();
-            image.flush();
-            image = newImage;
-        }
-        return image;
+    public static BufferedImage resizeCape(BufferedImage original) {
+        int imageWidth = 64;
+        int imageHeight = 32;
+
+        for (int srcWidth = original.getWidth(), srcHeight = original.getHeight(); imageWidth < srcWidth || imageHeight < srcHeight; imageWidth *= 2, imageHeight *= 2) {}
+
+        final BufferedImage imgNew = new BufferedImage(imageWidth, imageHeight, BufferedImage.TYPE_INT_ARGB);
+        Graphics g = imgNew.getGraphics();
+        g.drawImage(original, 0, 0, null);
+        g.dispose();
+
+        return scale(imgNew, 64, 32);
     }
 
     /**
@@ -151,5 +148,42 @@ public class Utils {
             }
         }
         return outputStream.toByteArray();
+    }
+
+    /**
+     * UUID from BufferedImage
+     * @param img The BufferedImage to convert
+     * @return The UUID
+     * @throws Exception
+     */
+    public static UUID imageToUuid(BufferedImage img) throws Exception {
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        ImageIO.write(img, "png", byteArrayOutputStream);
+        byte[] imageBytes = byteArrayOutputStream.toByteArray();
+
+        // Uses MD5 under the hood (UUID v3)
+        return UUID.nameUUIDFromBytes(imageBytes);
+    }
+
+    /**
+     * Gets an image from a URL
+     * @param downloadUrl The url to download
+     * @return The buffered image
+     */
+    public static BufferedImage downloadImage(String downloadUrl) {
+        try {
+            URL url = new URL(downloadUrl);
+            HttpURLConnection httpurlconnection = (HttpURLConnection) url.openConnection();
+            httpurlconnection.addRequestProperty("User-Agent", "GeyserMC/" + GeyserApi.api().geyserApiVersion());
+            httpurlconnection.setDoInput(true);
+            httpurlconnection.setDoOutput(false);
+            httpurlconnection.connect();
+
+            if (httpurlconnection.getResponseCode() / 100 == 2) {
+                return ImageIO.read(httpurlconnection.getInputStream());
+            }
+        } catch (IOException ignored) {}
+
+        return null;
     }
 }

@@ -25,14 +25,14 @@
 
 package org.geysermc.extension.thirdpartycosmetics.ears;
 
+import org.geysermc.extension.thirdpartycosmetics.ThirdPartyCosmetics;
 import org.geysermc.extension.thirdpartycosmetics.Utils;
+import org.geysermc.extension.thirdpartycosmetics.config.CosmeticConfig;
 import org.geysermc.geyser.api.skin.Skin;
 import org.geysermc.geyser.api.skin.SkinGeometry;
 
-import javax.imageio.ImageIO;
-import java.awt.Graphics2D;
+import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -58,9 +58,9 @@ public class EarsFetcher {
      * @return The updated skin with ears
      */
     public static CompletableFuture<Skin> request(Skin officialSkin, UUID playerId, String username) {
-        for (EarsProvider provider : EarsProvider.VALUES) {
+        for (CosmeticConfig.CosmeticProviders provider : ThirdPartyCosmetics.config.ears_urls) {
             Skin skin = Utils.getOrDefault(
-                requestEars(provider.getUrlFor(playerId, username), officialSkin),
+                requestEars(provider.getUrl(playerId, username), officialSkin),
                 officialSkin, 3
             );
             if (skin != officialSkin) {
@@ -98,7 +98,7 @@ public class EarsFetcher {
     private static Skin supplyEars(Skin existingSkin, String earsUrl) {
         try {
             // Get the ears texture
-            BufferedImage ears = ImageIO.read(new URL(earsUrl));
+            BufferedImage ears = Utils.downloadImage(earsUrl);
             if (ears == null) throw new NullPointerException();
 
             // Convert the skin data to a BufferedImage
