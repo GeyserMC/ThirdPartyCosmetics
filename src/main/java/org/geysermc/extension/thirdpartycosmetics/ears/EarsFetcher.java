@@ -58,7 +58,7 @@ public class EarsFetcher {
      * @return The updated skin with ears
      */
     public static CompletableFuture<Skin> request(Skin officialSkin, UUID playerId, String username) {
-        for (CosmeticConfig.CosmeticProviders provider : ThirdPartyCosmetics.config.ears_urls) {
+        for (CosmeticConfig.CosmeticProviders provider : ThirdPartyCosmetics.config.earsUrls) {
             Skin skin = Utils.getOrDefault(
                 requestEars(provider.getUrl(playerId, username), officialSkin),
                 officialSkin, 3

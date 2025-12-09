@@ -25,6 +25,8 @@
 
 package org.geysermc.extension.thirdpartycosmetics.config;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -34,7 +36,8 @@ public class CosmeticConfig {
     public boolean customCapes = true;
     public boolean customEars = true;
 
-    public List<CosmeticProviders> cape_urls = new ArrayList<>() {
+    @SerializedName("cape_urls")
+    public List<CosmeticProviders> capeUrls = new ArrayList<>() {
         {
             add(new CosmeticProviders("optifine", 0, "https://optifine.net/capes/{username}.png"));
             add(new CosmeticProviders("minecraftcapes", 1, "https://api.minecraftcapes.net/profile/{uuid}/cape"));
@@ -42,7 +45,8 @@ public class CosmeticConfig {
         }
     };
 
-    public List<CosmeticProviders> ears_urls = new ArrayList<>() {
+    @SerializedName("ears_urls")
+    public List<CosmeticProviders> earsUrls = new ArrayList<>() {
         {
             add(new CosmeticProviders("minecraftcapes", 0, "https://api.minecraftcapes.net/profile/{uuid}/ears"));
         }

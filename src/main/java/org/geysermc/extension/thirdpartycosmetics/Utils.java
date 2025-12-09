@@ -87,7 +87,12 @@ public class Utils {
         int imageWidth = 64;
         int imageHeight = 32;
 
-        for (int srcWidth = original.getWidth(), srcHeight = original.getHeight(); imageWidth < srcWidth || imageHeight < srcHeight; imageWidth *= 2, imageHeight *= 2) {}
+        int srcWidth = original.getWidth();
+        int srcHeight = original.getHeight();
+        while(imageWidth < srcWidth || imageHeight < srcHeight) {
+            imageWidth *= 2;
+            imageHeight *= 2;
+        }
 
         final BufferedImage imgNew = new BufferedImage(imageWidth, imageHeight, BufferedImage.TYPE_INT_ARGB);
         Graphics g = imgNew.getGraphics();

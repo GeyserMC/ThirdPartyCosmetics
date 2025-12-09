@@ -63,7 +63,7 @@ public class ThirdPartyCosmetics implements Extension {
     private void handleCapes(SessionSkinApplyEvent event) {
         Cape cape = Utils.getOrDefault(CapeFetcher.request(
             event.skinData().cape(), event.uuid(), event.username()
-        ), event.skinData().cape(), ThirdPartyCosmetics.config.cape_urls.size() * 3);
+        ), event.skinData().cape(), ThirdPartyCosmetics.config.capeUrls.size() * 3);
 
         if (!cape.failed() && cape != event.skinData().cape()) {
             this.logger().debug("Applied cape texture for " + event.username() + " (" + event.uuid() + ")");
@@ -81,7 +81,7 @@ public class ThirdPartyCosmetics implements Extension {
         // Get the ears texture for the player
         Skin skin = Utils.getOrDefault(EarsFetcher.request(
             event.skinData().skin(), event.uuid(), event.username()
-        ), event.skinData().skin(), ThirdPartyCosmetics.config.ears_urls.size() * 3);
+        ), event.skinData().skin(), ThirdPartyCosmetics.config.earsUrls.size() * 3);
 
         // Does the skin have an ears texture
         if (skin != event.skinData().skin()) {

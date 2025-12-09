@@ -45,7 +45,7 @@ public class CapeFetcher {
      * @return The updated cape
      */
     public static CompletableFuture<Cape> request(Cape currentCape, UUID playerId, String username) {
-        for (CosmeticConfig.CosmeticProviders provider : ThirdPartyCosmetics.config.cape_urls) {
+        for (CosmeticConfig.CosmeticProviders provider : ThirdPartyCosmetics.config.capeUrls) {
             Cape cape = Utils.getOrDefault(
                 requestCape(provider.getUrl(playerId, username), currentCape),
                 currentCape, 3

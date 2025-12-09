@@ -62,8 +62,8 @@ public class ConfigLoader {
             reader.close();
 
             // Sort the auth URLs
-            config.cape_urls.sort(Comparator.comparingInt(CosmeticConfig.CosmeticProviders::priority));
-            config.ears_urls.sort(Comparator.comparingInt(CosmeticConfig.CosmeticProviders::priority));
+            config.capeUrls.sort(Comparator.comparingInt(CosmeticConfig.CosmeticProviders::priority));
+            config.earsUrls.sort(Comparator.comparingInt(CosmeticConfig.CosmeticProviders::priority));
         } catch (IOException exception) {
             if (configFile.toFile().delete()) {
                 return loadConfig(directory);
