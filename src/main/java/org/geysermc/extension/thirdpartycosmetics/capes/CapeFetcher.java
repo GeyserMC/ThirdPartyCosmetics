@@ -25,16 +25,17 @@
 
 package org.geysermc.extension.thirdpartycosmetics.capes;
 
+import org.geysermc.extension.thirdpartycosmetics.ThirdPartyCosmetics;
 import org.geysermc.extension.thirdpartycosmetics.Utils;
+import org.geysermc.extension.thirdpartycosmetics.config.CosmeticConfig;
 import org.geysermc.geyser.api.skin.Cape;
 
-import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.net.URL;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 public class CapeFetcher {
+
     /**
      * Try and find a cape texture for a Java player
      *
@@ -44,9 +45,9 @@ public class CapeFetcher {
      * @return The updated cape
      */
     public static CompletableFuture<Cape> request(Cape currentCape, UUID playerId, String username) {
-        for (CapeProvider provider : CapeProvider.VALUES) {
+        for (CosmeticConfig.CosmeticProviders provider : ThirdPartyCosmetics.config.capeUrls) {
             Cape cape = Utils.getOrDefault(
-                requestCape(provider.getUrlFor(playerId, username), currentCape),
+                requestCape(provider.getUrl(playerId, username), currentCape),
                 currentCape, 3
             );
             if (!cape.failed() && cape != currentCape) {
@@ -61,32 +62,44 @@ public class CapeFetcher {
         if (capeUrl == null || capeUrl.isEmpty()) return CompletableFuture.completedFuture(currentCape);
 
         CompletableFuture<Cape> future;
-        Cape cape = supplyCape(capeUrl);
+
+        String[] urlSection = capeUrl.split("/");
+        byte[] capeBytes = supplyCape(capeUrl);
+
+        Cape cape = new Cape(
+            capeUrl,
+            urlSection[urlSection.length - 1], // get the texture id and use it as cape id
+            capeBytes,
+            capeBytes.length == 0
+        );
+
         future = CompletableFuture.completedFuture(cape);
         return future;
     }
 
-    private static Cape supplyCape(String capeUrl) {
-        byte[] cape = new byte[0];
+    private static byte[] supplyCape(String capeUrl) {
+        byte[] empty = new byte[0];
+
         try {
-            BufferedImage originalImage = ImageIO.read(new URL(capeUrl));
+            BufferedImage originalImage = Utils.downloadImage(capeUrl);
+
+            // Invalid image
+            if(originalImage == null) return empty;
+
+            // Default LabyMod Cape
+            if(capeUrl.contains("labymod") && Utils.imageToUuid(originalImage).toString().equals("dc1b48fa-ca1b-3eb3-b137-37f8bdaae45a")) {
+                return empty;
+            }
+
+            // Valid Cape
             if(originalImage.getWidth() != 64 || originalImage.getHeight() != 32){
                 BufferedImage resizedImage = Utils.resizeCape(originalImage);
-                cape = Utils.bufferedImageToImageData(resizedImage);
-            }
-            else{
-                cape = Utils.bufferedImageToImageData(originalImage);
+                return Utils.bufferedImageToImageData(resizedImage);
+            } else {
+                return Utils.bufferedImageToImageData(originalImage);
             }
         } catch (Exception ignored) {
-        } // just ignore I guess
-
-        String[] urlSection = capeUrl.split("/"); // A real url is expected at this stage
-
-        return new Cape(
-            capeUrl,
-            urlSection[urlSection.length - 1], // get the texture id and use it as cape id
-            cape,
-            cape.length == 0
-        );
+            return empty;
+        }
     }
 }
